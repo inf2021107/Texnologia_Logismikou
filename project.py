@@ -1,5 +1,9 @@
 import streamlit as st
 import pandas as pd
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.manifold import TSNE
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # ΒΗΜΑ 1ο: Φόρτωση Δεδομένων: Η εφαρμογή θα πρέπει να είναι σε θέση να φορτώνει tabular data (csv)
 def load_data():
