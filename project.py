@@ -44,6 +44,45 @@ def preprocess_data(data):
     
     return data_clean
 
+# ΒΗΜΑ 3ο: 2D Visualization Tab
+def plot_tsne(data):
+    if data.empty:
+        st.error("No valid data available for t-SNE.")
+        return
+    
+    features = data.iloc[:, :-1]
+    labels = data.iloc[:, -1]
+    tsne = TSNE(n_components=2, perplexity=30, n_iter=300)
+    tsne_result = tsne.fit_transform(features)
+    
+    plt.figure(figsize=(10, 6))
+    sns.scatterplot(x=tsne_result[:, 0], y=tsne_result[:, 1], hue=labels, palette='viridis')
+    plt.title('t-SNE 2D Visualization')
+    st.pyplot(plt)
+ 
+def plot_eda(data):
+    if data.empty:
+        st.error("No valid data available for EDA.")
+        return
+    
+    st.write("Exploratory Data Analysis:")
+    
+    # Pairplot
+    st.write("Pairplot:")
+    sns.pairplot(data, hue=data.columns[-1])
+    st.pyplot(plt)
+    
+    # Heatmap
+    st.write("Heatmap:")
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(data.corr(), annot=True, cmap='coolwarm')
+    st.pyplot(plt)
+    
+    # Boxplot
+    st.write("Boxplot:")
+    plt.figure(figsize=(10, 6))
+    sns.boxplot(data=data)
+    st.pyplot(plt)
 
 def main():
     st.title("Application Development for Data Analysis")
@@ -64,7 +103,16 @@ def main():
             if data_clean.empty:
                 st.error("No valid data available after cleaning. Please upload a dataset with valid numeric values.")
                 return
+            # Tabs for different visualizations
+            tab1, tab2  = st.tabs(["T-SNE", "EDA"])
 
+             with tab1:
+                st.header("t-SNE Visualization")
+                plot_tsne(data_clean)
+                
+            with tab2:
+                st.header("Exploratory Data Analysis")
+                plot_eda(data_clean)
         else:
             st.error("Invalid data structure. Please upload a dataset with the correct format.")
 
