@@ -8,6 +8,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.cluster import KMeans, AgglomerativeClustering
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, f1_score, precision_score, recall_score, silhouette_score, davies_bouldin_score
 
 # ΒΗΜΑ 1ο: Φόρτωση Δεδομένων: Η εφαρμογή θα πρέπει να είναι σε θέση να φορτώνει tabular data (csv)
 def load_data():
@@ -151,12 +152,19 @@ def run_classification(data):
     ax[1].set_xlabel('Predicted')
     ax[1].set_ylabel('Actual')
 
+    st.pyplot(fig)
+ 
     # Classification Reports
     st.write("## Classification Reports")
+    st.write("### k-NN")
     st.text(classification_report(y_test, y_pred_knn, zero_division=0))
 
     st.write("### Random Forest")
     st.text(classification_report(y_test, y_pred_rf, zero_division=0))
+    
+    # Determine the best model
+    best_model = max(metrics, key=lambda x: metrics[x]['f1'])
+    st.write(f"## Best Model: {best_model}")
     
 def run_clustering(data):
     st.write("Clustering Tab")
@@ -208,6 +216,25 @@ def run_clustering(data):
     ax[1].set_title('Agglomerative Clustering')
     
     st.pyplot(fig)
+
+#ΒΗΜΑ 5 : Αποτελέσματα και Σύγκριση    
+    # Determine the best model
+    best_model = max(metrics, key=lambda x: metrics[x]['silhouette'])
+    st.write(f"## Best Model: {best_model}")
+
+#ΒΗΜΑ 6 : Info Tab 
+def display_info():
+    st.header("Σχετικά με την Εφαρμογή")
+    st.write("""
+        Αυτή η εφαρμογή αναπτύχθηκε για την ανάλυση δεδομένων με διάφορους αλγόριθμους μηχανικής μάθησης.
+        Παρέχει δυνατότητες όπως:
+        - Φόρτωση και προεπεξεργασία δεδομένων
+        - Οπτικοποίηση δεδομένων σε 2D με χρήση t-SNE
+        - Αναλυτική Εξερεύνηση Δεδομένων (EDA)
+        - Ταξινόμηση δεδομένων με χρήση αλγορίθμων k-NN και Random Forest
+        - Συσταδοποίηση δεδομένων με χρήση αλγορίθμων k-Means και Agglomerative Clustering
+        - Παρουσίαση των αποτελεσμάτων και καθορισμός του καλύτερου μοντέλου βάσει των μετρικών απόδοσης
+    """)
     
 def main():
     st.title("Application Development for Data Analysis")
@@ -229,7 +256,7 @@ def main():
                 st.error("No valid data available after cleaning. Please upload a dataset with valid numeric values.")
                 return
             # Tabs for different visualizations
-            tab1, tab2, tab3, tab4  = st.tabs(["T-SNE", "EDA", "CLASSIFICATION", "CLUSTERING"])
+            tab1, tab2, tab3, tab4, tab5  = st.tabs(["T-SNE", "EDA", "CLASSIFICATION", "CLUSTERING","INFO"])
 
              with tab1:
                 st.header("t-SNE Visualization")
@@ -246,6 +273,10 @@ def main():
             with tab4:
                 st.header("Clustering")
                 run_clustering(data_clean)
+            
+            with tab5:
+                st.header("INFO")
+                display_info()
         else:
             st.error("Invalid data structure. Please upload a dataset with the correct format.")
 
